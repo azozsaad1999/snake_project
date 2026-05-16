@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ملاحظاتي اليومية</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+            text-align: right;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .note-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .notes-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .note {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: darkred;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>ملاحظاتي اللي مو يومية</h1>
+
+    <div class="note-input">
+        <textarea id="noteText" placeholder="اكتب ملاحظتك هنا..."></textarea>
+        <button id="addBtn">إضافة</button>
+    </div>
+
+    <div class="notes-container" id="notesContainer"></div>
+
+    <script>
+        // تحميل الملاحظات عند فتح الصفحة
+        window.onload = loadNotes;
+
+        document.getElementById("addBtn").addEventListener("click", addNote);
+
+        function addNote() {
+            const text = document.getElementById("noteText").value.trim();
+            if (text === "") return;
+
+            const notes = JSON.parse(localStorage.getItem("notes")) || [];
+            notes.push(text);
+            localStorage.setItem("notes", JSON.stringify(notes));
+
+            document.getElementById("noteText").value = "";
+            loadNotes();
+        }
+
+        function loadNotes() {
+            const container = document.getElementById("notesContainer");
+            container.innerHTML = "";
+
+            const notes = JSON.parse(localStorage.getItem("notes")) || [];
+
+            notes.forEach((note, index) => {
+                const div = document.createElement("div");
+                div.className = "note";
+
+                const deleteBtn = document.createElement("button");
+                deleteBtn.className = "delete-btn";
+                deleteBtn.textContent = "حذف";
+                deleteBtn.onclick = () => deleteNote(index);
+
+                div.appendChild(deleteBtn);
+                div.appendChild(document.createTextNode(note));
+
+                container.appendChild(div);
+            });
+        }
+
+        function deleteNote(index) {
+            const notes = JSON.parse(localStorage.getItem("notes")) || [];
+            notes.splice(index, 1);
+            localStorage.setItem("notes", JSON.stringify(notes));
+            loadNotes();
+        }
+    </script>
+
+</body>
+</html>
